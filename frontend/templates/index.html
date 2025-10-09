@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bengaluru House Price Predictor</title>
+    <style>
+        body { font-family: Arial, max-width : 800px; margin : 30px auto; }
+        h2 { text-align:center; }
+        form { background: #f7f7f7; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+        label { display:block; margin-top:10px; font-weight:bold; }
+        input, select { width:100%; padding:8px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
+        button { margin-top:20px; padding:12px; width:100%; background:#4CAF50; color:white; border:none; border-radius:5px; cursor:pointer; font-size:16px; }
+        #result { margin-top:20px; font-size:22px; font-weight:bold; text-align:center; }
+    </style>
+</head>
+<body>
+    <h2>Bengaluru House Price Predictor 🏘️</h2>
+    <form id="predictForm">
+
+        <h3>House Details</h3>
+        {% for feature in numeric_features %}
+            <label>{{ feature }}:</label>
+            <input type="number" step="any" name="{{ feature }}" placeholder="Enter {{ feature }}" required>
+        {% endfor %}
+
+        <h3>Area Type (Only one)</h3>
+        <select name="area_type" required>
+            {% for f in area_features %}
+                <option value="{{ f }}">{{ f }}</option>
+            {% endfor %}
+        </select>
+
+        <h3>Month of Possession</h3>
+        <select name="month" required>
+            {% for m in months %}
+                <option value="{{ m }}">{{ m }}</option>
+            {% endfor %}
+        </select>
+
+        <h3>Possession Status</h3>
+        <select name="immediate" required>
+            <option value="y">Immediate Possession</option>
+            <option value="n">Ready To Move</option>
+        </select>
+
+        <h3>Location</h3>
+        <select name="location" required>
+            {% for loc in location_features %}
+                <option value="{{ loc }}">{{ loc }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Predict Price</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const response = await fetch('/predict', { method:'POST', body: formData });
+            const data = await response.json();
+            document.getElementById('result').innerText = "Predicted Price: " + data.predicted_price;
+        });
+    </script>
+</body>
+</html>
